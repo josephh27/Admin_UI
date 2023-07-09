@@ -31,10 +31,6 @@ app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
 });
 
-app.get('/about', async (req, res) => {
-    // run code stuff
-    res.sendFile(__dirname + '/public/about.html');
-});
 
 // Getting json data
 app.get('/indexInfo', async (req, res) => {
@@ -43,21 +39,46 @@ app.get('/indexInfo', async (req, res) => {
     res.json(JSON.parse(indexInfo));
 });
 
-app.post('/indexInfo', upload.any(), (req, res) => {
-    // run code stuff
+app.post('/indexInfo', upload.any(), async (req, res) => {
     const newData = req.body;
     fs.writeFileSync('./public/data/index.json', JSON.stringify(newData, null, 2));
-    console.log(req.body);
-    console.log(req.files);
-});
+})
 
-app.get('/admin-login', async (req, res) => {
+
+app.get('/admin/admin-login', async (req, res) => {
     // run code stuff
     res.sendFile(__dirname + '/public/admin/login.html');
 })
 
 
+
 // Routes for CPE Department
-app.get('/cpe/about', async (req, res) => {
-    res.sendFile(__dirname + '/public/cpe/about.html')
+app.get('/admin/about', async (req, res) => {
+    res.sendFile(__dirname + '/public/admin/about.html')
 })
+
+app.get('/cpe/accomplishments', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/accomplishment.html')
+})
+
+app.get('/cpe/contact', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/contact.html')
+})
+
+app.get('/cpe/faculty', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/faculty.html')
+})
+
+app.get('/cpe/graduate', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/graduate.html')
+})
+
+app.get('/cpe/history', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/history.html')
+})
+
+app.get('/cpe/personnel', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/personnel.html')
+})
+
+

@@ -6,3 +6,7 @@
 *, *::before, *::after {
     box-sizing: inherit;
 }
+
+#cpe-about {
+    color: red;
+}

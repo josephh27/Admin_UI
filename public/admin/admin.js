@@ -12,15 +12,13 @@ async function getIndexInfo(){
     academicProgram.innerText = data['academicPrograms'];
 }
 
-mainForm.addEventListener('submit', async (e) => {
+mainForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const response = await fetch('/indexInfo');
-    const data = await response.json();
 
     const fd = new FormData(mainForm);
     const urlEncoded = new URLSearchParams(fd).toString();
     fetch('/indexInfo', {
-        method: 'POST',
+        method: "POST",
         body: fd,
     });
 })
