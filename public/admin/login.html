@@ -17,7 +17,7 @@
           </a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
               <li class="logged-in" style="display:none;">
-                <a href="#" class="grey-text" id="logout">Logout</a>
+                <a href="/session_logout" class="grey-text" id="logout">Logout</a>
               </li>
               <li class="logged-out" style="display:none;">
                 <a href="#" class="grey-text modal-trigger" data-target="modal-login">Login</a>
@@ -26,14 +26,6 @@
         </div>
       </nav>    
 
-    <form id="main-form">
-        <h1>College of Engineering</h1>
-        <textarea name="ceIntro" id="ceIntro" cols="30" rows="10" id="ceIntro"></textarea>
-        <h2>Academic Programs</h2>
-        <textarea name="academicPrograms" id="academicPrograms" cols="30" rows="10"></textarea>
-        <input type="file" name="file">
-        <input type="submit" value="Submit">
-    </form>
      <!-- LOGIN MODAL -->
     <div id="modal-login" class="modal">
     <div class="modal-content">
@@ -51,9 +43,9 @@
         </form>
     </div>
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script type="module" src="auth.js"></script>
-    <script type="module" src="admin.js"></script>
+    <script type="module" src="admin_scripts/auth.js"></script>
+    <script type="module" src="admin_scripts/admin.js"></script>
 </body>
 </html>

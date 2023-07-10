@@ -1,0 +1,9 @@
+npm install express
+npm install --save firebase-admin
+npm install cookie-parser
+npm install body-parser
+npm install ejs
+npm install cors
+npm install -g nodemon
+npm install csurf
+npm install multer

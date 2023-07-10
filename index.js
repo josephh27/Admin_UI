@@ -3,57 +3,126 @@ const cors = require('cors');
 const fs = require('fs');
 const app = express();
 const multer = require('multer');
-const port = 3000;
+// Security packages
+const cookieParser = require("cookie-parser");
+const csrf = require('csurf');
+const bodyParser = require('body-parser');
+const admin = require("firebase-admin");
+const PORT = process.env.PORT || 3000;
 
-app.use(express.static('public'));
-// To create a shortcut directory to views golder
-// app.engine("html", require("ejs").renderFile);
+const serviceAccount = require("./serviceAccountKey.json");
+
 app.use(cors()); //Allow request from any IP
-
-const middle = express.urlencoded({ 
-    extended: false, 
-    limit: 10000,
-    parameterLimit: 2,
-})
 
 const storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        callback(null, __dirname + '/public/files');
+        callback(null, __dirname + '/public/img');
     },
     filename: function (req, file, callback) {
         const filename = `file_${file.originalname}`;
+        console.log(file);
         callback(null, filename);
     }
 })
-const upload = multer({ storage: storage });
 
-app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+const upload = multer({ storage: storage });
+app.use(express.static('public'));
+
+
+// Security configuration
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://server-auth-41acc.firebaseio.com",
+});
+
+const csrfMiddleware = csrf({ cookie: true });
+app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(csrfMiddleware);
+
+app.all("*", (req, res, next) => {
+    res.cookie("XSRF-TOKEN", req.csrfToken());
+    next();
+});
+
+app.get("/admin/login", function (req, res) {
+    res.sendFile(__dirname + '/public/admin/login.html');
+})
+
+app.get("/session_login", function (req, res) {
+    const sessionCookie = req.cookies.session || "";
+    admin
+        .auth()
+        .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+        .then((userData) => {
+            res.json(userData);
+        })
+        .catch((error) => {
+            res.json({});
+        });
+    });
+
+app.post("/session_login", (req, res) => {
+    const idToken = req.body.idToken.toString();
+    const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    admin
+        .auth()
+        .createSessionCookie(idToken, { expiresIn })
+        .then(
+        (sessionCookie) => {
+            const options = { maxAge: expiresIn, httpOnly: true };
+            res.cookie("session", sessionCookie, options);
+            res.end(JSON.stringify({ status: "success" }));
+        },
+        (error) => {
+            res.status(401).send("UNAUTHORIZED REQUEST!");
+        }
+    );
 });
 
 
-// Getting json data
-app.get('/indexInfo', async (req, res) => {
+app.get("/session_logout", (req, res) => {
+    res.clearCookie("session");
+    res.redirect("/admin/login");
+});
+// End of security configuration
+
+
+
+// Getting department info routes
+app.get('/cpe_info', async (req, res) => {
     // run code stuff
-    let indexInfo = fs.readFileSync('./public/data/index.json', 'utf-8');
+    let indexInfo = fs.readFileSync('./public/data/cpe_data.json', 'utf-8');
     res.json(JSON.parse(indexInfo));
 });
 
-app.post('/indexInfo', upload.any(), async (req, res) => {
+app.post('/cpe_info', upload.any(), async (req, res) => {
     const newData = req.body;
-    fs.writeFileSync('./public/data/index.json', JSON.stringify(newData, null, 2));
+    fs.writeFileSync('./public/data/cpe_data.json', JSON.stringify(newData, null, 2));
 })
 
 
-app.get('/admin/admin-login', async (req, res) => {
-    // run code stuff
-    res.sendFile(__dirname + '/public/admin/login.html');
-})
+// Admin routes
+app.get("/admin/cpe", function (req, res) {
+    const sessionCookie = req.cookies.session || "";
+    admin
+      .auth()
+      .verifySessionCookie(sessionCookie, true /** checkRevoked */)
+      .then((userData) => {
+        res.sendFile(__dirname + '/public/admin/cpe_admin.html');
+      })
+      .catch((error) => {
+        res.redirect("/admin/login");
+    });
+});
+
+
+
 
 
 
 // Routes for CPE Department
-app.get('/admin/about', async (req, res) => {
+app.get('/cpe/about', async (req, res) => {
     res.sendFile(__dirname + '/public/admin/about.html')
 })
 
@@ -81,4 +150,7 @@ app.get('/cpe/personnel', async (req, res) => {
     res.sendFile(__dirname + '/public/cpe/personnel.html')
 })
 
+app.listen(PORT, () => {
+    console.log(`Example app listening at http://localhost:${PORT}`);
+});
 

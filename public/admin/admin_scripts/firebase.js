@@ -20,4 +20,4 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // Reference to authorization service
-export const auth = getAuth();
+export const auth = getAuth(app);
