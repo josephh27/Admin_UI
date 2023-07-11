@@ -8,7 +8,7 @@ async function getInfo(){
 
     cpeIntro.innerText = data['ceIntro'];
     academicProgram.innerText = data['academicPrograms'];
-    cpeLogo.src = 'cpe'
+    cpeLogo.src = data['cpeLogo'];
 }
 
 

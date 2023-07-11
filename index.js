@@ -19,8 +19,7 @@ const storage = multer.diskStorage({
         callback(null, __dirname + '/public/img');
     },
     filename: function (req, file, callback) {
-        const filename = `file_${file.originalname}`;
-        console.log(file);
+        const filename = `${file.originalname}`;
         callback(null, filename);
     }
 })
@@ -96,7 +95,7 @@ app.get('/cpe_info', async (req, res) => {
     res.json(JSON.parse(indexInfo));
 });
 
-app.post('/cpe_info', upload.any(), async (req, res) => {
+app.post('/cpe_info', upload.any(), async (req, res) => {;
     const newData = req.body;
     fs.writeFileSync('./public/data/cpe_data.json', JSON.stringify(newData, null, 2));
 })
@@ -122,8 +121,12 @@ app.get("/admin/cpe", function (req, res) {
 
 
 // Routes for CPE Department
+app.get('/cpe/', async (req, res) => {
+    res.sendFile(__dirname + '/public/cpe/index..html')
+})
+
 app.get('/cpe/about', async (req, res) => {
-    res.sendFile(__dirname + '/public/admin/about.html')
+    res.sendFile(__dirname + '/public/cpe/about.html')
 })
 
 app.get('/cpe/accomplishments', async (req, res) => {
